@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nearby Sellers - OrgFarmer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .seller-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .distance-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #666;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">🌱 OrgFarmer</div>
+        <a href="/logout" style="color: white; text-decoration: none;">Logout</a>
+    </div>
+    
+    <div class="container">
+        <a href="/customer/dashboard" class="back-btn">← Back to Dashboard</a>
+        <h1>📍 Nearby Sellers</h1>
+        
+        <div th:each="sellerInfo : ${sellers}" class="seller-card">
+            <div>
+                <h3 th:text="${sellerInfo.seller.name}">Seller Name</h3>
+                <p th:text="${sellerInfo.seller.address}">Address</p>
+                <p>📞 <span th:text="${sellerInfo.seller.phone}">Phone</span></p>
+            </div>
+            <div>
+                <span class="distance-badge">📍 <span th:text="${sellerInfo.formattedDistance}">Distance</span></span>
+            </div>
+        </div>
+        
+        <div th:if="${sellers.empty}">
+            <p>No sellers found within 10km of your location.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Location - OrgFarmer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">🌱 OrgFarmer - Update Location</div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <h2>📍 Update Your Farm Location</h2>
+            
+            <div class="info">
+                <p>💡 <strong>How to get coordinates:</strong></p>
+                <p>1. Open Google Maps on your phone/computer</p>
+                <p>2. Right-click on your farm location</p>
+                <p>3. Click on the coordinates that appear (e.g., 28.6139, 77.2090)</p>
+                <p>4. Copy and paste below</p>
+            </div>
+            
+            <form action="/seller/update-location" method="post">
+                <div class="form-group">
+                    <label>Latitude *</label>
+                    <input type="text" name="latitude" required placeholder="e.g., 28.6139">
+                </div>
+                
+                <div class="form-group">
+                    <label>Longitude *</label>
+                    <input type="text" name="longitude" required placeholder="e.g., 77.2090">
+                </div>
+                
+                <button type="submit">📍 Update Location</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

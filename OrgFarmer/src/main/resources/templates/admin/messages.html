@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Messages - OrgFarmer Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            position: fixed;
+            height: 100%;
+            padding: 30px 20px;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+        
+        .sidebar h2 small {
+            font-size: 11px;
+            color: #a0a0a0;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .sidebar a {
+            color: #e0e0e0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            margin: 8px 0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .sidebar a i {
+            width: 25px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .sidebar a.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+        }
+        
+        .content {
+            margin-left: 280px;
+            padding: 25px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        .header h1 i {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tab {
+            padding: 10px 25px;
+            background: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .filter-tab i {
+            margin-right: 8px;
+        }
+        
+        .filter-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .filter-tab.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+        }
+        
+        .messages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+        }
+        
+        .message-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .message-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.pending {
+            background: #f39c12;
+            color: #fff;
+        }
+        
+        .status-badge.resolved {
+            background: #27ae60;
+            color: #fff;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .user-details h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .user-details p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .message-subject {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .message-subject i {
+            color: #4CAF50;
+        }
+        
+        .message-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .message-date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #999;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        
+        .btn-view {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #1976D2;
+        }
+        
+        .btn-resolve {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-resolve:hover:not(:disabled) {
+            background: #45a049;
+        }
+        
+        .btn-resolve:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .empty-state i {
+            font-size: 80px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+            }
+            
+            .sidebar h2 {
+                font-size: 12px;
+            }
+            
+            .sidebar h2 small {
+                display: none;
+            }
+            
+            .sidebar a span {
+                display: none;
+            }
+            
+            .sidebar a i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+            
+            .content {
+                margin-left: 80px;
+            }
+            
+            .messages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🌱<br><small>OrgFarmer</small></h2>
+        <a href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+        <a href="/admin/users"><i class="fas fa-users"></i> <span>Users</span></a>
+        <a href="/admin/products"><i class="fas fa-box"></i> <span>Products</span></a>
+        <a href="/admin/reviews"><i class="fas fa-star"></i> <span>Reviews</span></a>
+        <a href="/admin/messages" class="active"><i class="fas fa-envelope"></i> <span>Messages</span></a>
+    </div>
+    
+    <div class="content">
+        <div class="header">
+            <h1>
+                <i class="fas fa-envelope"></i> 
+                Contact Messages
+            </h1>
+            <div class="stats">
+                <div class="stat-badge">
+                    <i class="fas fa-clock"></i> 
+                    Pending: <span th:text="${pendingCount}">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-tabs">
+            <button class="filter-tab" data-status="all" onclick="filterMessages('all')">
+                <i class="fas fa-inbox"></i> All Messages
+            </button>
+            <button class="filter-tab" data-status="PENDING" onclick="filterMessages('PENDING')">
+                <i class="fas fa-hourglass-half"></i> Pending
+            </button>
+            <button class="filter-tab" data-status="RESOLVED" onclick="filterMessages('RESOLVED')">
+                <i class="fas fa-check-circle"></i> Resolved
+            </button>
+        </div>
+        
+        <div class="messages-grid">
+            <div th:each="msg : ${messages}" class="message-card" th:attr="data-status=${msg.status}">
+                <div class="card-header">
+                    <span class="status-badge" th:class="${msg.status == 'PENDING'} ? 'pending' : 'resolved'">
+                        <i th:if="${msg.status == 'PENDING'}" class="fas fa-clock"></i>
+                        <i th:unless="${msg.status == 'PENDING'}" class="fas fa-check"></i>
+                        <span th:text="${msg.status}">PENDING</span>
+                    </span>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-details">
+                            <h3 th:text="${msg.user.name}">John Doe</h3>
+                            <p><i class="fas fa-envelope"></i> <span th:text="${msg.user.email}">john@example.com</span></p>
+                            <p><i class="fas fa-phone"></i> <span th:text="${msg.user.phone}">+1234567890</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="message-subject">
+                        <i class="fas fa-tag"></i>
+                        <span th:text="${msg.subject}">Product Query</span>
+                    </div>
+                    <div class="message-text" th:text="${msg.message}">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit...
+                    </div>
+                    <div class="message-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span th:text="${#dates.format(msg.createdDate, 'dd MMM yyyy, hh:mm a')}">01 Jan 2024, 10:30 AM</span>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <a th:href="@{/admin/message/{id}(id=${msg.id})}" class="btn btn-view">
+                        <i class="fas fa-eye"></i> View Full
+                    </a>
+                    <form th:action="@{/admin/message/resolve}" method="post" style="flex: 1;">
+                        <input type="hidden" name="messageId" th:value="${msg.id}">
+                        <button type="submit" class="btn btn-resolve" th:disabled="${msg.status == 'RESOLVED'}">
+                            <i class="fas fa-check"></i> 
+                            <span th:text="${msg.status == 'RESOLVED'} ? 'Resolved' : 'Mark Resolved'">Mark Resolved</span>
+                        </button>
+                    </form>
+                    <button class="btn btn-delete" th:onclick="'deleteMessage(' + ${msg.id} + ')'">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${#lists.isEmpty(messages)}" class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h3>No Messages Found</h3>
+            <p>When customers contact you, their messages will appear here.</p>
+            <p style="margin-top: 20px; font-size: 14px;">
+                <i class="fas fa-info-circle"></i> Customers can contact you from the app
+            </p>
+        </div>
+        
+        <footer>
+            <p><i class="fas fa-leaf"></i> OrgFarmer - Organic Farming Marketplace</p>
+        </footer>
+    </div>
+    
+    <div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:white; border-radius:20px; max-width:400px; width:90%; padding:30px; text-align:center;">
+            <i class="fas fa-exclamation-triangle" style="font-size:50px; color:#e74c3c; margin-bottom:20px;"></i>
+            <h3>Delete Message?</h3>
+            <p>Are you sure you want to delete this message? This action cannot be undone.</p>
+            <div style="display:flex; gap:15px; margin-top:25px;">
+                <button onclick="closeModal()" style="flex:1; padding:12px; background:#95a5a6; color:white; border:none; border-radius:10px; cursor:pointer;">Cancel</button>
+                <button id="confirmDeleteBtn" style="flex:1; padding:12px; background:#e74c3c; color:white; border:none; border-radius:10px; cursor:pointer;">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let messageIdToDelete = null;
+        const modal = document.getElementById('deleteModal');
+        
+        function filterMessages(status) {
+            const cards = document.querySelectorAll('.message-card');
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            tabs.forEach(function(tab) {
+                if (tab.getAttribute('data-status') === status) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            cards.forEach(function(card) {
+                if (status === 'all' || card.getAttribute('data-status') === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function deleteMessage(id) {
+            messageIdToDelete = id;
+            modal.style.display = 'flex';
+        }
+        
+        function closeModal() {
+            modal.style.display = 'none';
+            messageIdToDelete = null;
+        }
+        
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function() {
+                if (messageIdToDelete) {
+                    fetch('/admin/message/delete/' + messageIdToDelete, {
+                        method: 'DELETE'
+                    }).then(function(response) {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Failed to delete message');
+                            closeModal();
+                        }
+                    }).catch(function(error) {
+                        console.error('Error:', error);
+                        alert('An error occurred');
+                        closeModal();
+                    });
+                }
+            });
+        }
+        
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeTab = document.querySelector('.filter-tab.active');
+            if (activeTab) {
+                const status = activeTab.getAttribute('data-status');
+                if (status && status !== 'all') {
+                    filterMessages(status);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

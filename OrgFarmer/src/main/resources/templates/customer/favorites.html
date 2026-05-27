@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Favorites - OrgFarmer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .favorite-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .remove-btn {
+            background: #f44336;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #666;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">🌱 OrgFarmer</div>
+        <a href="/logout" style="color: white; text-decoration: none;">Logout</a>
+    </div>
+    
+    <div class="container">
+        <a href="/customer/dashboard" class="back-btn">← Back to Dashboard</a>
+        <h1>❤️ My Favorite Sellers</h1>
+        
+        <div class="favorites-grid">
+            <div th:each="seller : ${favorites}" class="favorite-card">
+                <div>
+                    <h3 th:text="${seller.name}">Seller Name</h3>
+                    <p th:text="${seller.address}">Address</p>
+                    <p>📞 <span th:text="${seller.phone}">Phone</span></p>
+                </div>
+                <form action="/customer/favorite/remove" method="post">
+                    <input type="hidden" name="sellerId" th:value="${seller.id}">
+                    <button type="submit" class="remove-btn">Remove</button>
+                </form>
+            </div>
+        </div>
+        
+        <div th:if="${favorites.empty}">
+            <p style="text-align: center; padding: 50px; background: white; border-radius: 10px;">
+                💔 You haven't added any favorites yet. Browse products and add your favorite sellers!
+            </p>
+        </div>
+    </div>
+</body>
+</html>
